@@ -18,6 +18,8 @@ class Player:
         self.sprite = pyglet.sprite.Sprite(img=self.player_image, x=0, y=0, batch=batch, group=group)
         self.player_config_data = player_config_data
         self.distance_traveled = 0
+        self.time_taken = 0   #the new statistic
+        
 
     def update_location(self, x, y):
         self.sprite.update(relative_display_functions.get_relative_graph_x(x) - self.sprite.width / 2,
@@ -75,6 +77,8 @@ class Player:
             # Go to next object when target is reached
             if self.absolute_x == target_x and self.absolute_y == target_y:
                 self.current_objective += 1
+
+            self.time_taken += dt #update time taken
 
         self.distance_traveled = self.distance_traveled + math.sqrt(math.pow(last_absolute_x-self.absolute_x, 2) + math.pow(last_absolute_y-self.absolute_y, 2))
         self.sprite.visible = (global_game_data.current_player_index == self.player_index)
