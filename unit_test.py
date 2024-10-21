@@ -125,6 +125,210 @@ class TestPathFinding(unittest.TestCase):
         result = pathing.validating_path(test_graph, path, target, exit_node)
         self.assertFalse(result) 
 
+    def test_dfs_path_includes_target(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+
+        path = [0, 1, 3]
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertTrue(result)
+
+    def test_dfs_empty_path(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+
+    def test_dfs_no_target(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 2, 3]  
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_all_nodes_in_path_are_adjacent_dfs(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 1, 3] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertTrue(result)
+
+    def test_nodes_in_path_are_not_adjacent_dfs(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 2, 1] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+
+        self.assertFalse(result)
+
+    def test_path_does_no_exit_node_dfs(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 2] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_no_valid_neighbors_dfs(self):
+        test_graph = [
+            [0, []], #no neighbors 
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 3]
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result) 
+
+    def test_bfs_path_includes_target(self):
+            test_graph = [
+                [0, [1, 2]],
+                [1, [0, 3]],
+                [2, [0, 3]],
+                [3, [1, 2]]
+            ]
+
+            path = [0, 1, 3]
+            target = 1
+            exit_node = 3
+            result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+            self.assertTrue(result)
+
+    def test_bfs_empty_path(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+
+    def test_bfs_no_target(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 2, 3]  
+        target = 1
+        exit_node = 3
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_all_nodes_in_path_are_adjacent_bfs(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 1, 3] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+        self.assertTrue(result)
+
+    def test_nodes_in_path_are_not_adjacent_bfs(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 2, 1] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+
+        self.assertFalse(result)
+
+    def test_path_does_no_exit_node_bfs(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 2] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_no_valid_neighbors_bfs(self):
+        test_graph = [
+            [0, []], #no neighbors 
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 3]
+        target = 1
+        exit_node = 3
+        result = pathing.validating_bfs_path(test_graph, path, target, exit_node)
+        self.assertFalse(result) 
+
+
+
+
+
 
 if __name__ == '__main__':
     unittest.main()
