@@ -1,14 +1,16 @@
 import graph_data
 import global_game_data
 from numpy import random
+import heapq
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
     global_game_data.graph_paths.append(get_test_path())
-    global_game_data.graph_paths.append(get_random_path())
-    global_game_data.graph_paths.append(get_dfs_path())
-    global_game_data.graph_paths.append(get_bfs_path())
+    #global_game_data.graph_paths.append(get_random_path())
+    #global_game_data.graph_paths.append(get_dfs_path())
+   # global_game_data.graph_paths.append(get_bfs_path())
     global_game_data.graph_paths.append(get_dijkstra_path())
+    
     
 
 def get_test_path():
@@ -80,8 +82,6 @@ def random_generation():
     visited_nodes = []
     visited_nodes.add()
 
-
-
 def get_dfs_path():
     #precondition: that the target node is not empty
     assert len(global_game_data.target_node) > 0, "Target node list is empty."
@@ -126,7 +126,6 @@ def get_dfs_path():
 
     return path
 
-
 #for postcondition checking every pair of sequential vertices in the path are connected by an edge
 def validating_dfs_path(graph, path, target, exit_node):
     for i in range(len(path) - 1):
@@ -145,6 +144,7 @@ def validating_dfs_path(graph, path, target, exit_node):
     return True
   
 def get_bfs_path():
+   
    #precondition: that the target node is not empty
     assert len(global_game_data.target_node) > 0, "Target node list is empty."
     graph = graph_data.graph_data[global_game_data.current_graph_index]
@@ -189,7 +189,6 @@ def get_bfs_path():
     
     return []
 
-#for postcondition checking every pair of sequential vertices in the path are connected by an edge
 def validating_bfs_path(graph, path, target, exit_node):
     for i in range(len(path) - 1):
         current_node = path[i]
@@ -207,7 +206,120 @@ def validating_bfs_path(graph, path, target, exit_node):
     return True
 
 def get_dijkstra_path():
-    return [1,2]
+    #precondition: that the target node is not empty
+    assert len(global_game_data.target_node) > 0, "Target node list is empty."
+    graph = graph_data.graph_data[global_game_data.current_graph_index]
+    #precondition: that the graph is not empty
+    assert len(graph) > 0, "The graph is empty."
+
+    start_node = 0
+    exit_node = len(graph) - 1
+    target = global_game_data.target_node[global_game_data.current_graph_index]
+
+    #path from the start to the target
+    distances = []
+    for i in range(len(graph)):
+        distances.append(float('inf'))
+
+    distances[start_node] = 0
+    parents = []
+    for i in range(len(graph)):
+        parents.append(None)
+
+    priority_queue = []
+    heapq.heappush(priority_queue, (0, start_node))
+    visited_nodes = set()
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        if current_node == target:
+            break
+
+        if current_node in visited_nodes:
+            continue
+        visited_nodes.add(current_node)
+
+        for neighbor in graph[current_node][1]:
+            weight = 1
+            alt = current_distance + weight
+            if neighbor not in visited_nodes and alt < distances[neighbor]:
+                distances[neighbor] = alt
+                parents[neighbor] = current_node
+                heapq.heappush(priority_queue, (alt, neighbor))
+
+    path_to_target = []
+    current_node = target
+    while current_node is not None:
+        path_to_target.insert(0, current_node)
+        current_node = parents[current_node]
+
+    #path from the target to the end
+    distances = []
+    for i in range(len(graph)):
+        distances.append(float('inf'))
+
+    distances[target] = 0
+    
+    parents = []
+    for i in range(len(graph)):
+        parents.append(None)
+
+    priority_queue = []
+    heapq.heappush(priority_queue, (0, target))
+
+    visited_nodes.clear()
+
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        if current_node == exit_node:
+            break
+
+        if current_node in visited_nodes:
+            continue
+        visited_nodes.add(current_node)
+        for neighbor in graph[current_node][1]:
+            weight = 1
+            alt = current_distance + weight
+            if neighbor not in visited_nodes and alt < distances[neighbor]:
+                distances[neighbor] = alt
+                parents[neighbor] = current_node
+                heapq.heappush(priority_queue, (alt, neighbor))
+
+    path_from_target = []
+    current_node = exit_node
+    while current_node is not None:
+        path_from_target.insert(0, current_node)
+        current_node = parents[current_node]
+
+    path_to_target.pop()  
+    full_path = path_to_target + path_from_target
+
+    #post condition: the path has more than 3 elements. must include the start node, target node, exit node
+    assert len(full_path) >= 3, "Path must contain at least three nodes."
+    #post condition: that the target was visited
+    assert full_path.__contains__(target), "Target was not visited."
+    #post condition: that the exit node was last node visited
+    assert full_path[-1] == exit_node, "Last node is not the exit node."
+    ##post condition: that the start node was the first node visited
+    assert full_path[0] == start_node, "Start node is not the first node."
+
+    return full_path
+#for postcondition checking every pair of sequential vertices in the path are connected by an edge
+def validating_dijkstra_path(graph, path, target, exit_node):
+    for i in range(len(path) - 1):
+        current_node = path[i]
+        next_node = path[i + 1]
+
+        if next_node not in graph[current_node][1]:
+            return False
+
+    if target not in path:
+        return False
+    
+    if path[-1] != exit_node:
+        return False
+    
+    return True
 
 
 

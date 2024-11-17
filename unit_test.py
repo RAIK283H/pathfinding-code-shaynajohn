@@ -417,6 +417,105 @@ class TestPathFinding(unittest.TestCase):
         path = [0, 0]  
         self.assertTrue(main_two.check_hamiltonian_cycle(graph, path)[0])
 
+    def test_dijkstra_path_includes_target(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+
+        path = [0, 1, 3]
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertTrue(result)
+
+    def test_dijkstra_empty_path(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+
+    def test_dijkstra_no_target(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 2, 3]  
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_adjacent_dijkstra(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 1, 3] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertTrue(result)
+
+    def test_nodes_not_adjacent_dijkstra(self):
+        test_graph = [
+            [0, [1, 2]],   
+            [1, [0, 3]],   
+            [2, [0, 3]],   
+            [3, [1, 2]]    
+        ]
+
+        path = [0, 2, 1] 
+        exit_node = 3
+        target = 1
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+
+        self.assertFalse(result)
+
+    def test_path_no_exit_node_dijkstra(self):
+        test_graph = [
+            [0, [1, 2]],
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 2] 
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertFalse(result)
+
+    def test_no_valid_neighbors_dijkstra(self):
+        test_graph = [
+            [0, []], 
+            [1, [0, 3]],
+            [2, [0, 3]],
+            [3, [1, 2]]
+        ]
+        
+        path = [0, 1, 3]
+        target = 1
+        exit_node = 3
+        result = pathing.validating_dijkstra_path(test_graph, path, target, exit_node)
+        self.assertFalse(result) 
 
 
 if __name__ == '__main__':
