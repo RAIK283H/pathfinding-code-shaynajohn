@@ -10,6 +10,7 @@ player_data = [
     #["DFS", "3.png", colors.PURPLE],
     #["BFS", "4.png", colors.BLUE],
     ["Dijkstra", "5.png", colors.GREEN],
+    [" Extra Credit:A star", "5.png", colors.RED],
     
 ]
 
