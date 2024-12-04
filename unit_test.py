@@ -3,6 +3,8 @@ import unittest
 import pathing
 import main_two
 import permutation
+import f_w
+import global_game_data
 
 
 class TestPathFinding(unittest.TestCase):
@@ -617,6 +619,294 @@ class TestPathFinding(unittest.TestCase):
         exit_node = 3
         result = pathing.validating_astar_path(test_graph, path, target, exit_node)
         self.assertFalse(result) 
+
+
+
+    def test_no_edges(self):
+        graph_data = [
+            [], [], []
+        ]
+        n = 3
+        expected_dist = [
+            [0, math.inf, math.inf],
+            [math.inf, 0, math.inf],
+            [math.inf, math.inf, 0]
+        ]
+        
+        dist, parent = f_w.floyd_warshall(graph_data, n)
+        self.assertEqual(dist, expected_dist)
+
+    
+    def test_build_path(self):
+        parent = [
+            [None, 0, 1],
+            [1, None, 1],
+            [1, 2, None]
+        ]
+        start, end = 0, 2
+        expected_path = [0,0, 1, 2]
+        result_path = f_w.build_path(parent, start, end)
+        self.assertEqual(result_path, expected_path)
+
+    def test_build_path_no_path(self):
+        parent = [
+            [None, None, None],
+            [None, None, None],
+            [None, None, None]
+        ]
+        start = 0
+        end = 2
+        expected_path = [0, 2]  
+        
+        result = f_w.build_path(parent, start, end)
+        self.assertEqual(result, expected_path)
+
+    def test_build_path_hamiltonian(self):
+        parent = [
+            [None, 0, 1],
+            [None, 0, 1],
+            [None, None, None]
+        ]
+        start = 0
+        end = 0
+        expected_path = [0,0]
+        
+        result = f_w.build_path(parent, start, end)
+        self.assertEqual(result, expected_path)
+
+
+    def test_generate_adjacency_matrix(self):
+        graph_data = [
+            [(1, [1,2])],  
+            [(1, [0])],     
+            [(1, [0])]     
+        ]
+        nodes = 3
+        expected_matrix = [
+            [0, 1, 1],
+            [1, 0, math.inf], 
+            [1, math.inf, 0]   
+        ]
+        
+        result = f_w.generate_adjacency_matrix(graph_data, nodes)
+        self.assertEqual(result, expected_matrix)
+
+    def test_generate_adjacency_matrix_empty_graph(self):
+        graph_data = [[], [], []]
+        nodes = 3
+        expected_matrix = [
+            [0, math.inf, math.inf],  
+            [math.inf, 0, math.inf],
+            [math.inf, math.inf, 0]
+        ]
+        
+        result = f_w.generate_adjacency_matrix(graph_data, nodes)
+        self.assertEqual(result, expected_matrix)
+
+    def test_generate_adjacency_matrix_single_node(self):
+        graph_data = [[]]  
+        nodes = 1
+        expected_matrix = [
+            [0] 
+        ]
+        
+        result = f_w.generate_adjacency_matrix(graph_data, nodes)
+        self.assertEqual(result, expected_matrix)
+
+    def test_generate_adjacency_matrix_disconnected_graph(self):
+        graph_data = [
+            [(1, [1])],  
+            [],          
+            [(1, [0])]   
+        ]
+        nodes = 3
+        expected_matrix = [
+            [0, 1, math.inf],
+            [math.inf, 0, math.inf],
+            [1, math.inf, 0]
+        ]
+        
+        result = f_w.generate_adjacency_matrix(graph_data, nodes)
+        self.assertEqual(result, expected_matrix)
+
+
+
+    def test_floyd_warshall_compare_dijkstra_graph1(self):
+        graph_data = [
+            [(3, [1])],      
+            [(4, [2])],      
+            [(5, [0])]        
+        ]
+        n = 3
+
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+
+        fw_path = paths[start_node][end_node]
+        
+        self.assertEqual(fw_path, dj_path)
+
+
+    def test_floyd_warshall_compare_dijkstra_graph3(self):
+        graph_data = [
+            [(1, [1])],      
+            [(1, [2])],       
+            [(5, [0])]        
+        ]
+        n = 3
+
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+
+        fw_path = paths[start_node][end_node]
+        
+        self.assertEqual(fw_path, dj_path)
+
+    def test_floyd_warshall_compare_dijkstra_more_weights(self):
+        graph_data = [
+            [(2, [1])],       
+            [(3, [2])],      
+            [(10, [0])]       
+        ]
+        n = 3
+
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+
+        fw_path = paths[start_node][end_node]
+        
+        self.assertEqual(fw_path, dj_path)
+ 
+    def test_floyd_warshall_compare_dijkstra_high_weight(self):
+        graph_data = [
+            [(3, [1])],       
+            [(1, [2])],       
+            [(100, [0])]     
+        ]
+        n = 3
+
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+
+        fw_path = paths[start_node][end_node]
+        
+        self.assertEqual(fw_path, dj_path)
+
+    def test_floyd_warshall_compare_dijkstra2(self):
+        graph_data = [
+            [(1, [1])],            
+            [(200, [0, 2])],      
+            [(1, [1])]             
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+  
+        fw_path = paths[start_node][end_node]
+
+        self.assertEqual(fw_path, dj_path)  
+ 
+    def test_floyd_warshall_compare_dijkstra3(self):
+        graph_data = [
+            [(1, [1])],           
+            [(500, [0, 2])],      
+            [(1, [1])]            
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+        
+        fw_path = paths[start_node][end_node]
+        self.assertEqual(fw_path, dj_path)
+
+    def test_floyd_warshall_compare_dijkstra4(self):
+        graph_data = [
+            [(3, [1])],          
+            [(2, [2])],         
+            [(None, [])]         
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+        
+        fw_path = paths[start_node][end_node]
+        self.assertEqual(fw_path, dj_path)
+
+
+    def test_floyd_warshall_compare_dijkstra5(self):
+        graph_data = [
+            [(10, [1])],        
+            [(5, [2])],          
+            [(None, [])]         
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+        
+        fw_path = paths[start_node][end_node]
+        self.assertEqual(fw_path, dj_path)
+
+    def test_floyd_warshall_compare_dijkstra6(self):
+        graph_data = [
+            [(4, [1])],          
+            [(3, [2])],        
+            [(None, [])]        
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+        
+        fw_path = paths[start_node][end_node]
+        self.assertEqual(fw_path, dj_path)
+
+    def test_floyd_warshall_compare_dijkstra8(self):
+        graph_data = [
+            [(5, [1])],         
+            [(5, [2])],          
+            [(None, [])]        
+        ]
+        
+        n = 3
+        start_node = 0
+        end_node = 2
+
+        dist, paths = f_w.floyd_warshall(graph_data, n)
+        dj_path = pathing.get_dijkstra_path(graph_data, start_node, n, end_node)
+        
+        fw_path = paths[start_node][end_node]
+        self.assertEqual(fw_path, dj_path)
 
 
 if __name__ == '__main__':

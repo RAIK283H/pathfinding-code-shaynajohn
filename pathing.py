@@ -3,15 +3,19 @@ import global_game_data
 from numpy import random
 import heapq
 import math
+import f_w
 
 def set_current_graph_paths():
     global_game_data.graph_paths.clear()
-    global_game_data.graph_paths.append(get_test_path())
+    #global_game_data.graph_paths.append(get_test_path())
     #global_game_data.graph_paths.append(get_random_path())
     #global_game_data.graph_paths.append(get_dfs_path())
    # global_game_data.graph_paths.append(get_bfs_path())
-    global_game_data.graph_paths.append(get_dijkstra_path())
-    global_game_data.graph_paths.append(get_astar_path())
+    global_game_data.graph_paths.append(get_dijkstra_path(graph_data, start_node = 1, exit_node=1, target=0))
+    #global_game_data.graph_paths.append(get_astar_path())
+    global_game_data.graph_paths.append(f_w.get_fw_path())
+    
+    
     
     
     
@@ -208,7 +212,7 @@ def validating_bfs_path(graph, path, target, exit_node):
     
     return True
 
-def get_dijkstra_path():
+def get_dijkstra_path(graph, start_node, exit_node, target):
     #precondition: that the target node is not empty
     assert len(global_game_data.target_node) > 0, "Target node list is empty."
     graph = graph_data.graph_data[global_game_data.current_graph_index]
@@ -287,6 +291,7 @@ def get_dijkstra_path():
                 distances[neighbor] = alt
                 parents[neighbor] = current_node
                 heapq.heappush(priority_queue, (alt, neighbor))
+
 
     path_from_target = []
     current_node = exit_node
@@ -445,17 +450,3 @@ def validating_astar_path(graph, path, target, exit_node):
         return False
     
     return True
-
-
-
-
-
-
-
-
-
-
-
-
-
-

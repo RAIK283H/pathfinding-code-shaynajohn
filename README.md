@@ -12,3 +12,10 @@ The path list adds on whatever the next node is.
 
 statistic added:
 the statistic added on was measuring how many seconds each players was going through the paths for
+
+
+HW 7 Extra Credit:
+*implemented in f_w.py as the very last function*
+Sets edge weights to 1
+Considers all possible intermediate pairs of nodes from i to k and k to j with the three nested for loops
+Constructs path to target and adds path to exit
